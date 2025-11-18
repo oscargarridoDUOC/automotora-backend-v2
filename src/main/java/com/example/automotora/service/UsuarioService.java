@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.automotora.model.Usuario;
@@ -17,6 +18,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<Usuario> getAllUsuarios() {
         return usuarioRepository.findAll();
@@ -35,6 +39,8 @@ public class UsuarioService {
     }
 
     public Usuario saveUsuario(Usuario usuario) {
+        String passwordHasheada = passwordEncoder.encode(usuario.getContrasena());
+        usuario.setContrasena(passwordHasheada);
         return usuarioRepository.save(usuario);
     }
 
@@ -44,7 +50,10 @@ public class UsuarioService {
             usuario.setNombre(usuarioActualizado.getNombre());
             usuario.setCorreo(usuarioActualizado.getCorreo());
             usuario.setRut(usuarioActualizado.getRut());
-            usuario.setContrasena(usuarioActualizado.getContrasena());
+            if (usuarioActualizado.getContrasena() != null) {
+                String passwordHasheada = passwordEncoder.encode(usuarioActualizado.getContrasena());
+                usuario.setContrasena(passwordHasheada);
+            }
             usuario.setRol(usuarioActualizado.getRol());
             return usuarioRepository.save(usuario);
         }
@@ -64,7 +73,8 @@ public class UsuarioService {
                 usuario.setRut(usuarioParcial.getRut());
             }
             if (usuarioParcial.getContrasena() != null) {
-                usuario.setContrasena(usuarioParcial.getContrasena());
+                String passwordHasheada = passwordEncoder.encode(usuarioParcial.getContrasena());
+                usuario.setContrasena(passwordHasheada);
             }
             if (usuarioParcial.getRol() != null) {
                 usuario.setRol(usuarioParcial.getRol());
