@@ -87,4 +87,15 @@ public class UsuarioService {
     public void deleteUsuario(Integer id) {
         usuarioRepository.deleteById(id);
     }
+
+    public Usuario login(Usuario usuario) {
+        Optional<Usuario> foundUsuarioOpt = usuarioRepository.findByCorreo(usuario.getCorreo());
+        Usuario foundUsuario = foundUsuarioOpt.orElse(null);
+        if (foundUsuario != null &&  passwordEncoder.matches(usuario.getContrasena(), foundUsuario.getContrasena())) {
+            return foundUsuario;
+        }
+
+        return null;
+    }
+
 }

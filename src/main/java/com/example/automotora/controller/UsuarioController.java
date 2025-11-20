@@ -85,5 +85,17 @@ public class UsuarioController {
         usuarioService.deleteUsuario(id);
         return ResponseEntity.noContent().build();
     }
+    
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Usuario usuario) {
+        Usuario login = usuarioService.login(usuario);
+        
+        if (login != null) {
+            login.setContrasena(null);
+            return ResponseEntity.ok(login);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+        }
+    }
 }
 
