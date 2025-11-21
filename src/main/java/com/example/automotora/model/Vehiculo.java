@@ -35,6 +35,9 @@ public class Vehiculo {
     @Column(name = "descripcion", length = 1000, nullable = true)
     private String descripcion;
 
+    @Column(name = "imagen", nullable = true)
+    private String imagen;
+
     @ManyToOne
     @JoinColumn(name = "marca_id", nullable = false)
     private Marca marca;

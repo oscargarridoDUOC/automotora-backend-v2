@@ -80,6 +80,7 @@ public class VehiculoService {
             vehiculo.setAnio(vehiculoActualizado.getAnio());
             vehiculo.setPrecio(vehiculoActualizado.getPrecio());
             vehiculo.setDescripcion(vehiculoActualizado.getDescripcion());
+            vehiculo.setImagen(vehiculoActualizado.getImagen());
             vehiculo.setMarca(vehiculoActualizado.getMarca());
             vehiculo.setTransmision(vehiculoActualizado.getTransmision());
             vehiculo.setCombustible(vehiculoActualizado.getCombustible());
@@ -103,6 +104,9 @@ public class VehiculoService {
             }
             if (vehiculoParcial.getDescripcion() != null) {
                 vehiculo.setDescripcion(vehiculoParcial.getDescripcion());
+            }
+            if (vehiculoParcial.getImagen() != null) {
+                vehiculo.setImagen(vehiculoParcial.getImagen());
             }
             if (vehiculoParcial.getMarca() != null) {
                 vehiculo.setMarca(vehiculoParcial.getMarca());
