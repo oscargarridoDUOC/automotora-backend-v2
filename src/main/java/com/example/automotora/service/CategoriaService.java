@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.automotora.model.Categoria;
+import com.example.automotora.model.Categorias;
 import com.example.automotora.repository.CategoriaRepository;
+import com.example.automotora.repository.CategoriasRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -17,6 +19,9 @@ public class CategoriaService {
 
     @Autowired
     private CategoriaRepository categoriaRepository;
+
+    @Autowired
+    private CategoriasRepository categoriasRepository;
 
     public List<Categoria> getAllCategorias() {
         return categoriaRepository.findAll();
@@ -55,6 +60,15 @@ public class CategoriaService {
     }
 
     public void deleteCategoria(Integer id) {
-        categoriaRepository.deleteById(id);
+        Categoria categoria = categoriaRepository.findById(id).orElse(null);
+
+        if (categoria != null) {
+            List<Categorias> categorias = categoriasRepository.findByCategoriaId(id);
+            for (Categorias cat : categorias) {
+                categoriasRepository.delete(cat);
+            }
+
+            categoriaRepository.delete(categoria);
+        }
     }
 }

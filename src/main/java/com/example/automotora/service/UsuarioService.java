@@ -8,7 +8,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.automotora.model.Usuario;
+import com.example.automotora.model.Reserva;
 import com.example.automotora.repository.UsuarioRepository;
+import com.example.automotora.repository.ReservaRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -21,6 +23,9 @@ public class UsuarioService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ReservaRepository reservaRepository;
 
     public List<Usuario> getAllUsuarios() {
         return usuarioRepository.findAll();
@@ -85,13 +90,22 @@ public class UsuarioService {
     }
 
     public void deleteUsuario(Integer id) {
-        usuarioRepository.deleteById(id);
+        Usuario usuario = usuarioRepository.findById(id).orElse(null);
+
+        if (usuario != null) {
+            List<Reserva> reservas = reservaRepository.findByUsuarioId(id);
+            for (Reserva reserva : reservas) {
+                reservaRepository.delete(reserva);
+            }
+
+            usuarioRepository.delete(usuario);
+        }
     }
 
     public Usuario login(Usuario usuario) {
         Optional<Usuario> foundUsuarioOpt = usuarioRepository.findByCorreo(usuario.getCorreo());
         Usuario foundUsuario = foundUsuarioOpt.orElse(null);
-        if (foundUsuario != null &&  passwordEncoder.matches(usuario.getContrasena(), foundUsuario.getContrasena())) {
+        if (foundUsuario != null && passwordEncoder.matches(usuario.getContrasena(), foundUsuario.getContrasena())) {
             return foundUsuario;
         }
 

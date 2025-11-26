@@ -59,10 +59,14 @@ public class RolService {
     }
 
     public void deleteRol(Integer id) {
-        List<Usuario> usuarios = usuarioRepository.findAll();
-        usuarios.stream()
-            .filter(usuario -> usuario.getRol() != null && usuario.getRol().getId().equals(id))
-            .forEach(usuarioRepository::delete);
-        rolRepository.deleteById(id);
+        Rol rol = rolRepository.findById(id).orElse(null);
+
+        if (rol != null) {
+            List<Usuario> usuarios = usuarioRepository.findByRolId(id);
+            for (Usuario usuario : usuarios) {
+                usuarioRepository.delete(usuario);
+            }
+            rolRepository.delete(rol);
+        }
     }
 }

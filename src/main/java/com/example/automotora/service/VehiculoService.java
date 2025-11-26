@@ -6,7 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.automotora.model.Vehiculo;
+import com.example.automotora.model.Reserva;
+import com.example.automotora.model.Categorias;
 import com.example.automotora.repository.VehiculoRepository;
+import com.example.automotora.repository.ReservaRepository;
+import com.example.automotora.repository.CategoriasRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -16,6 +20,12 @@ public class VehiculoService {
 
     @Autowired
     private VehiculoRepository vehiculoRepository;
+
+    @Autowired
+    private ReservaRepository reservaRepository;
+
+    @Autowired
+    private CategoriasRepository categoriasRepository;
 
     public List<Vehiculo> getAllVehiculos() {
         return vehiculoRepository.findAll();
@@ -126,6 +136,20 @@ public class VehiculoService {
     }
 
     public void deleteVehiculo(Integer id) {
-        vehiculoRepository.deleteById(id);
+        Vehiculo vehiculo = vehiculoRepository.findById(id).orElse(null);
+
+        if (vehiculo != null) {
+            List<Reserva> reservas = reservaRepository.findByVehiculoId(id);
+            for (Reserva reserva : reservas) {
+                reservaRepository.delete(reserva);
+            }
+
+            List<Categorias> categorias = categoriasRepository.findByVehiculoId(id);
+            for (Categorias categoria : categorias) {
+                categoriasRepository.delete(categoria);
+            }
+
+            vehiculoRepository.delete(vehiculo);
+        }
     }
 }

@@ -15,5 +15,13 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
 
     List<Reserva> findByVehiculoId(Integer vehiculoId);
 
+    List<Reserva> findByEstadoId(Integer estadoId);
+
+    void deleteByUsuarioId(Integer usuarioId);
+
+    void deleteByVehiculoId(Integer vehiculoId);
+
+    void deleteByEstadoId(Integer estadoId);
+
     boolean existsByVehiculoAndEstado(Vehiculo vehiculo, EstadoReserva estado);
 }

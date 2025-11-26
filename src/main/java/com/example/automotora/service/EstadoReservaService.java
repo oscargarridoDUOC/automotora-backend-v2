@@ -59,11 +59,14 @@ public class EstadoReservaService {
     }
 
     public void deleteEstadoReserva(Integer id) {
-        List<Reserva> reservas = reservaRepository.findAll();
-        reservas.stream()
-            .filter(reserva -> reserva.getEstado() != null && reserva.getEstado().getId().equals(id))
-            .forEach(reservaRepository::delete);
-        estadoReservaRepository.deleteById(id);
+        EstadoReserva estadoReserva = estadoReservaRepository.findById(id).orElse(null);
+
+        if (estadoReserva != null) {
+            List<Reserva> reservas = reservaRepository.findByEstadoId(id);
+            for (Reserva reserva : reservas) {
+                reservaRepository.delete(reserva);
+            }
+            estadoReservaRepository.delete(estadoReserva);
+        }
     }
 }
-
