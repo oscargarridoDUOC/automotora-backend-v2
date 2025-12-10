@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.automotora.model.Usuario;
 import com.example.automotora.service.UsuarioService;
+import com.example.automotora.security.JwtUtil;
 
 @RestController
 @RequestMapping("/api/v1/usuarios")
@@ -26,6 +27,9 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @GetMapping
     public ResponseEntity<List<Usuario>> getAllUsuarios() {
@@ -85,17 +89,19 @@ public class UsuarioController {
         usuarioService.deleteUsuario(id);
         return ResponseEntity.noContent().build();
     }
-    
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario usuario) {
         Usuario login = usuarioService.login(usuario);
-        
+
         if (login != null) {
             login.setContrasena(null);
-            return ResponseEntity.ok(login);
+            String token = jwtUtil.generateToken(login.getCorreo());
+            return ResponseEntity.ok(java.util.Map.of(
+                    "token", token,
+                    "usuario", login));
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
     }
 }
-
