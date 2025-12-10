@@ -8,8 +8,12 @@ import org.springframework.stereotype.Service;
 
 import com.example.automotora.model.Marca;
 import com.example.automotora.model.Vehiculo;
+import com.example.automotora.model.Reserva;
+import com.example.automotora.model.Categorias;
 import com.example.automotora.repository.MarcaRepository;
 import com.example.automotora.repository.VehiculoRepository;
+import com.example.automotora.repository.ReservaRepository;
+import com.example.automotora.repository.CategoriasRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -22,6 +26,12 @@ public class MarcaService {
 
     @Autowired
     private VehiculoRepository vehiculoRepository;
+
+    @Autowired
+    private ReservaRepository reservaRepository;
+
+    @Autowired
+    private CategoriasRepository categoriasRepository;
 
     public List<Marca> getAllMarcas() {
         return marcaRepository.findAll();
@@ -61,6 +71,15 @@ public class MarcaService {
 
     public void deleteMarca(Integer id) {
         List<Vehiculo> vehiculos = vehiculoRepository.findByMarcaId(id);
+
+        for (Vehiculo vehiculo : vehiculos) {
+            List<Reserva> reservas = reservaRepository.findByVehiculoId(vehiculo.getId());
+            reservaRepository.deleteAll(reservas);
+
+            List<Categorias> categorias = categoriasRepository.findByVehiculoId(vehiculo.getId());
+            categoriasRepository.deleteAll(categorias);
+        }
+
         vehiculoRepository.deleteAll(vehiculos);
         marcaRepository.deleteById(id);
     }
